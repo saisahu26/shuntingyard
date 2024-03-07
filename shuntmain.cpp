@@ -4,7 +4,7 @@
 #include <stack>
 #include <queue>
 #include <cctype>
-
+using namespace std;
 // Forward declarations
 template <typename T>
 class Stack;
@@ -42,7 +42,7 @@ public:
 
     void pop() {
         if (isEmpty()) {
-            std::cerr << "Stack is empty. Cannot pop.\n";
+               cerr << "Stack is empty. Cannot pop.\n";
             return;
         }
         Node* temp = top;
@@ -52,7 +52,7 @@ public:
 
     T peek() const {
         if (isEmpty()) {
-            std::cerr << "Stack is empty. Cannot peek.\n";
+               cerr << "Stack is empty. Cannot peek.\n";
             return T();
         }
         return top->data;
@@ -91,7 +91,7 @@ public:
 
     void dequeue() {
         if (isEmpty()) {
-            std::cerr << "Queue is empty. Cannot dequeue.\n";
+               cerr << "Queue is empty. Cannot dequeue.\n";
             return;
         }
         Node* temp = front;
@@ -110,7 +110,7 @@ public:
 // Shunting Yard Algorithm class
 class ShuntingYard {
 public:
-    static std::string convertToPostfix(const std::string& infixExpression);
+    static    string convertToPostfix(const    string& infixExpression);
 };
 
 // Binary Tree Node class
@@ -131,12 +131,12 @@ private:
 
     void destroyTree(BinaryTreeNode<char>* node);
 
-    BinaryTreeNode<char>* buildExpressionTreeHelper(const std::string& postfixExpression);
+    BinaryTreeNode<char>* buildExpressionTreeHelper(const    string& postfixExpression);
 
 public:
     ExpressionTree() : root(nullptr) {}
 
-    void buildTreeFromPostfix(const std::string& postfixExpression);
+    void buildTreeFromPostfix(const    string& postfixExpression);
 
     void printInfixHelper(BinaryTreeNode<char>* node) const;
 
@@ -153,12 +153,12 @@ public:
     ~ExpressionTree();
 };
 
-std::string ShuntingYard::convertToPostfix(const std::string& infixExpression) {
-    std::string postfixExpression;
-    std::stack<char> operators;
+   string ShuntingYard  convertToPostfix(const    string& infixExpression) {
+       string postfixExpression;
+       stack<char> operators;
 
     for (char token : infixExpression) {
-        if (std::isalnum(token)) {
+        if (   isalnum(token)) {
             postfixExpression += token;
         } else if (token == '(') {
             operators.push(token);
@@ -196,11 +196,11 @@ int precedence(char op) {
     return 0; // For other characters (operands)
 }
 
-BinaryTreeNode<char>* ExpressionTree::buildExpressionTreeHelper(const std::string& postfixExpression) {
-    std::stack<BinaryTreeNode<char>*> nodes;
+BinaryTreeNode<char>* ExpressionTree  buildExpressionTreeHelper(const    string& postfixExpression) {
+       stack<BinaryTreeNode<char>*> nodes;
 
     for (char token : postfixExpression) {
-        if (std::isalnum(token)) {
+        if (   isalnum(token)) {
             BinaryTreeNode<char>* operand = new BinaryTreeNode<char>(token);
             nodes.push(operand);
         } else {
@@ -220,11 +220,11 @@ BinaryTreeNode<char>* ExpressionTree::buildExpressionTreeHelper(const std::strin
     return nodes.top();
 }
 
-void ExpressionTree::buildTreeFromPostfix(const std::string& postfixExpression) {
+void ExpressionTree  buildTreeFromPostfix(const    string& postfixExpression) {
     root = buildExpressionTreeHelper(postfixExpression);
 }
 
-void ExpressionTree::destroyTree(BinaryTreeNode<char>* node) {
+void ExpressionTree  destroyTree(BinaryTreeNode<char>* node) {
     if (node) {
         destroyTree(node->left);
         destroyTree(node->right);
@@ -232,59 +232,59 @@ void ExpressionTree::destroyTree(BinaryTreeNode<char>* node) {
     }
 }
 
-void ExpressionTree::printInfixHelper(BinaryTreeNode<char>* node) const {
+void ExpressionTree  printInfixHelper(BinaryTreeNode<char>* node) const {
     if (node) {
-        if (std::isalnum(node->data)) {
-            std::cout << node->data;
+        if (   isalnum(node->data)) {
+               cout << node->data;
         } else {
-            std::cout << "(";
+               cout << "(";
             printInfixHelper(node->left);
-            std::cout << node->data;
+               cout << node->data;
             printInfixHelper(node->right);
-            std::cout << ")";
+               cout << ")";
         }
     }
 }
 
-void ExpressionTree::printInfix() const {
+void ExpressionTree  printInfix() const {
     printInfixHelper(root);
 }
 
-void ExpressionTree::printPrefixHelper(BinaryTreeNode<char>* node) const {
+void ExpressionTree  printPrefixHelper(BinaryTreeNode<char>* node) const {
     if (node) {
-        std::cout << node->data;
+           cout << node->data;
         printPrefixHelper(node->left);
         printPrefixHelper(node->right);
     }
 }
 
-void ExpressionTree::printPrefix() const {
+void ExpressionTree  printPrefix() const {
     printPrefixHelper(root);
 }
 
-void ExpressionTree::printPostfixHelper(BinaryTreeNode<char>* node) const {
+void ExpressionTree  printPostfixHelper(BinaryTreeNode<char>* node) const {
     if (node) {
         printPostfixHelper(node->left);
         printPostfixHelper(node->right);
-        std::cout << node->data;
+           cout << node->data;
     }
 }
 
-void ExpressionTree::printPostfix() const {
+void ExpressionTree  printPostfix() const {
     printPostfixHelper(root);
 }
 
 // Destructor for ExpressionTree
-ExpressionTree::~ExpressionTree() {
+ExpressionTree  ~ExpressionTree() {
     destroyTree(root);
 }
 
 int main() {
-    std::cout << "Enter an infix expression with spaces between each token: ";
-    std::string infixExpression;
-    std::getline(std::cin, infixExpression);
+       cout << "Enter an infix expression with spaces between each token: ";
+       string infixExpression;
+       getline(   cin, infixExpression);
 
     // Shunting Yard Algorithm
-    std::string postfixExpression = ShuntingYard::convertToPostfix(infixExpression);
-    std::
+       string postfixExpression = ShuntingYard  convertToPostfix(infixExpression);
+       
 }
