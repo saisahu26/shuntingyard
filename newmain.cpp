@@ -36,8 +36,8 @@ int main() {
 
    
     
-    while (running) {
-        // Prompting User
+    while (running) { //this is for what the user will enter and recive 
+       
         cout << endl << "enter a prompt: " << endl;
         cout << "Calculate" << endl;
         cout << "Quit" << endl << endl;
@@ -51,8 +51,8 @@ int main() {
         }
         
         else if (strcmp(command, "Calculate") == 0) {
-            // Input
-            cout << "enter equation in infix notation format: ";
+    
+            cout << "enter equation in infix notation format: "; //this is what the user will get
             cin.getline(input, 100);
             
             char postfixExpression[100];
@@ -60,8 +60,8 @@ int main() {
 
             root = constructExpressionTree(postfixExpression);
             
-            // Output
-            cout << "Postfix Expression Format: " << postfixExpression << endl;
+            
+            cout << "Postfix Expression Format: " << postfixExpression << endl;//this is what the console will read
             cout << "Infix notation Format: ";
             printInfixExpression(root);
             cout << endl;
