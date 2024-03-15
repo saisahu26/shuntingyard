@@ -1,7 +1,7 @@
 //sai sahu
 //modulairty from Jazveer K.
 //var names from Arjun V and Nikaansh S
-
+//names pulled from Jazveerk K's 'Node.cpp/Node.H" files from github.com/JazveerK
 #include <iostream>
 #include <cstring>
 #include "node.h"
