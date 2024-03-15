@@ -5,7 +5,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-class Node {
+class Node { //names pulled from Jazveerk K's 'Node.cpp/Node.H" files from github.com/JazveerK
 private:
     char data;
     Node* next;
