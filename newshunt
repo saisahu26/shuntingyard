@@ -1,0 +1,377 @@
+//saikapish sahu
+//3/11/24
+//shuningyard
+#include<iostream>
+#include <cctype>
+#include<cstring>
+#include<iomanip>
+
+using namespace std;
+
+class Node {//node class for stack and queue
+public:
+  char value;
+  Node* next;
+
+  Node(char newValue) {//constructor for node
+    next = NULL;
+    value = newValue;
+  }
+  char getValue() {//returns the value
+    return value;
+  }
+  Node* getNext() {//returns next
+    return next;
+  }
+  void setNext(Node* nextNode) {//sets next
+    next = nextNode;
+  }
+  void printV(Node* node) {//prints the value
+    if(node != NULL) {
+    cout << node -> getValue() << endl;
+    }
+  }
+  ~Node() {}//destructor
+};
+
+class NodeBT {//node class for binary tree
+public:
+  char value;
+  NodeBT* right;
+  NodeBT* left;
+  NodeBT* next;
+
+  NodeBT(char newValue) {//constructor
+    left = NULL;
+    right = NULL;
+    next = NULL;
+    value = newValue;
+  }
+  char getValueBT() {//returns value
+    return value;
+  }
+  NodeBT* getR() {//returns right
+    return right;
+  }
+  void setR(NodeBT* newRight) {//sets right
+    right = newRight;
+  }
+  NodeBT* getL() {//returns left
+    return left;
+  }
+  void setN(NodeBT* newNext) {//sets next
+    next = newNext;
+  }
+  NodeBT* getN() {//returns next
+    return next;
+  }
+  void setL(NodeBT* newLeft) {//sets left
+    left = newLeft;
+  }
+  ~NodeBT() {}//destructor
+};
+
+void popBt(NodeBT* &sfc,NodeBT* &pN);//pops binary tree nodes from the stack
+void toInfix(NodeBT* root, char ife[], int &counter);//converts the binary tree to infix
+void toPrefix(NodeBT* root, char ife[], int &counter);//converts the binary tree to prefix
+void toPostfix(NodeBT* root, char ife[], int &counter);//converts the binary tree to postfix
+void btMaker(Node* qTail, Node* qFront,NodeBT* &sfc);//makes the binary tree
+int getP(char a);// will return the precedence of an operator
+bool isOp(char a);//will determine if something is an operator
+void printQ(Node* head);//will print the queue, used for debugging
+void arrayNuller(char ary[]);//will null an array
+void pop(Node* &stackFront);//removes the top of the stack
+void push(Node* &stackFront, char newValue);//pushes a new value to the top of the stack
+void pushBt(NodeBT* &stackFront, NodeBT* temp);
+char peek(Node* stackFront);//returns the top value of the stack
+void enqueue(Node* &qFront, Node* &qTail, char newValue);//Puts a new node at the back of the queue
+Node* dequeue(Node* &qFront);//removes the node at the front of the queue
+void shunter(char ary[], Node* &stackFront, Node* &qTail, Node* &qFront, int counter);// will convert an expression from infix notation to postfix notation.
+
+int main() {//main function
+  Node* stackFront = NULL;
+  Node* qFront = NULL;
+  Node* qTail = NULL;
+  NodeBT* sfc = NULL;
+  char input[20];
+  char ary[20];
+  char converted[20];
+  arrayNuller(input);
+  arrayNuller(ary);
+  int counter = 0;
+  int counter1 = 0;
+  cout << "please enter the equation" << endl;
+  cin.getline(input, 80);
+  for(int i = 0; i < 20; i++) {
+    if(input[i] != ' ' && input[i] != '\n' && input[i] != '\0') {
+      ary[counter] = input[i];
+      counter++;
+    }
+  }
+  shunter(ary,stackFront,qTail,qFront,counter);
+  cout << "the postfix expression:" << endl;
+  printQ(qFront);
+  btMaker(qTail,qFront,sfc);
+  bool stillR = true;
+  while(stillR == true) {
+    char input1[20];
+    cout << "please enter quit infix postfix or prefix" << endl;
+    cin >> input1;
+    if(strcmp(input1,"infix") == 0) {
+      toInfix(sfc,converted,counter);
+      for(int i = 0; i< 20;i++) {
+	cout << converted[i];
+      }
+      cout << endl;
+      arrayNuller(converted);
+      counter = 0;
+    }
+    if(strcmp(input1,"prefix") == 0) {
+      int zero = 0;
+      toPrefix(sfc,converted,zero);
+      for(int i = 0; i< 20;i++) {
+        cout << converted[i];
+      }
+      cout << endl;
+      arrayNuller(converted);
+      counter = 0;
+    }
+    if(strcmp(input1,"postfix") == 0) {
+      toPostfix(sfc,converted,counter);
+      for(int i = 0; i< 20;i++) {
+        cout << converted[i];
+      }
+      cout << endl;
+      arrayNuller(converted);
+      counter = 0;
+    }
+    if(strcmp(input1 , "quit") == 0) {
+      stillR = false;
+    }
+  
+  }
+  return 0;
+}
+
+void arrayNuller(char ary[]) {//nulls an array
+  for(int i = 0; i < 20; i++) {
+    ary[i] = '\0';
+  }
+}
+
+void pop(Node* &stackFront) {//removes stackfront from the stack and sets a new stackfront
+  if(stackFront != NULL) {
+  Node* temp;
+  temp = stackFront;
+  if(temp -> getNext() != NULL) {
+    stackFront = temp -> getNext();
+    delete temp;
+  }
+  else {
+    stackFront = NULL;
+  }
+  }
+}
+
+void push(Node* &stackFront, char newValue) {//adds a new node to the stack making it the stack's front
+  Node* temp = new Node(newValue);
+  if(stackFront != NULL) {
+  temp -> setNext(stackFront);
+  }
+  stackFront = temp;
+}
+
+char peek(Node* stackFront) {//returns the value of the node at the top of the stack
+  if(stackFront != NULL){
+  return stackFront -> getValue();
+  }
+  return '\0';
+}
+
+void enqueue(Node* &qFront, Node* &qTail,char newValue) {//adds to the tail of the queue
+  Node* temp = new Node(newValue);
+  if(qTail != NULL) {
+  qTail -> setNext(temp);
+  }
+  qTail = temp;
+  if(qFront == NULL) {
+    qFront = qTail;
+  }
+}
+
+Node* dequeue(Node* &qFront) {//removes the front of a queue
+  Node* temp = qFront;
+  if (qFront != NULL) {
+    qFront = qFront -> getNext();
+    delete temp;
+  }
+  return qFront; 
+}
+
+void shunter(char ary[],Node* &stackFront,Node* &qTail,Node* &qFront,int counter) {//converts expression into a postfix expression
+   for(int i = 0; i < counter; i++) {
+    if(isdigit(ary[i])){//if number put in stack
+      enqueue(qFront, qTail, ary[i]);
+    }
+
+      if(ary[i] == '(') {
+        push(stackFront,ary[i]);
+      }
+
+      if(ary[i] == ')') {
+
+        while(stackFront != NULL && stackFront -> getValue() != '(') {
+          enqueue(qFront,qTail,(stackFront->getValue()));
+          pop(stackFront);
+        }
+
+        if(stackFront != NULL) {
+        pop(stackFront);
+        }
+
+      }
+      if(isOp(ary[i])) {
+        while(stackFront != NULL && getP(ary[i]) <= getP(stackFront->getValue())) {
+          enqueue(qFront,qTail,stackFront -> getValue());
+          pop(stackFront);
+        }
+        push(stackFront, ary[i]);
+      }
+  }
+  while(stackFront != NULL) {
+    enqueue(qFront, qTail, stackFront->getValue());
+    pop(stackFront);
+  }
+}
+
+void btMaker(Node* qTail, Node* qFront,NodeBT* &sfc) {//makes the binary tree
+  char pfe[20];
+  arrayNuller(pfe);
+  int counter = 0;
+  Node* current = qFront;
+  while(current != NULL) {
+    pfe[counter] = current -> getValue();
+    current = current->getNext();
+    counter++;
+  }
+
+  for(int i = 0; i < counter; i++) {
+    if(isOp(pfe[i])) {
+      NodeBT* temp = new NodeBT(pfe[i]);
+      NodeBT* right;
+      popBt(sfc,right);
+      NodeBT* left;
+      popBt(sfc,left);
+      temp -> setL(left);
+      temp -> setR(right);
+      pushBt(sfc, temp);
+    }
+    else if(isdigit(pfe[i])) {
+      NodeBT* temp = new NodeBT(pfe[i]);
+      pushBt(sfc,temp);
+    }
+  }
+ }
+
+
+void pushBt(NodeBT* &stackFront, NodeBT* temp) {//adds nodes to the stack for the tree
+  if(stackFront == NULL) {
+    stackFront = temp;
+  }
+  else {
+    temp -> setN(stackFront);
+    stackFront = temp;
+  }
+}
+
+void popBt(NodeBT* &sfc,NodeBT* &pN) {//removes nodes from the stack for the tree
+  if(sfc != NULL) {
+    pN = sfc;
+    sfc = sfc->getN();
+  }
+}
+
+
+void printQ(Node* head) {//prints the queue made from shuntyard
+  char temp[20];
+  arrayNuller(temp);
+  int count = 0;
+  while(head != NULL) {
+    temp[count] = head -> getValue();
+    head = head->getNext();
+    count++;
+  }
+  for(int i = 0; i < count; i++) {
+    cout << temp[i];
+  }
+  cout << endl;
+}
+
+int getP(char a) {//gets the precedence of an operator
+  if(a == '+' || a == '-') {
+    return 1;
+  }
+  if(a == '/' || a== '*') {
+    return 2;
+  }
+  if(a == '^') {
+    return 3;
+  }
+  return 0;
+}
+
+bool isOp(char a) {//determines if something is an operator
+  if(a == '*' ||
+     a == '/' ||
+     a == '+' ||
+     a == '^' ||
+     a == '-') {
+    return true;
+  }
+  return false;
+}
+
+void toInfix(NodeBT* root, char ife[], int &counter) {//converts to binary tree to an infix expression
+  if(root == NULL) {
+    return;
+  }
+  if(root->getR() == NULL && root->getL() == NULL) {
+    ife[counter] = root->getValueBT();
+    counter++;
+    return;
+  }
+  toInfix(root->getL(),ife,counter);
+  ife[counter] = root ->getValueBT();
+  counter++;
+  toInfix(root->getR(),ife,counter);
+}
+
+void toPrefix(NodeBT* root, char ife[], int &counter) {//converts to binary tree to a prefix expression
+  if(root == NULL) {
+    return;
+  }
+  if(root->getR() == NULL && root->getL() == NULL) {
+    ife[counter] = root->getValueBT();
+    counter++;
+    return;
+  }
+  ife[counter] = root ->getValueBT();
+  counter++;
+  toPrefix(root->getL(),ife,counter);
+  toPrefix(root->getR(),ife,counter);
+}
+
+void toPostfix(NodeBT* root, char ife[], int &counter) {//converts to binary tree to a postfix expression
+  if(root == NULL) {
+    return;
+  }
+  if(root->getR() == NULL && root->getL() == NULL) {
+    ife[counter] = root->getValueBT();
+    counter++;
+    return;
+  }
+  toPostfix(root->getL(),ife,counter);
+  toPostfix(root->getR(),ife,counter);
+  ife[counter] = root ->getValueBT();
+  counter++;
+}
